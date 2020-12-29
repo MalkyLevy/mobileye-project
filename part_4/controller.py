@@ -11,15 +11,3 @@ class Controller:
 
         for curr_img_data in process_data.process_the_data(data):
             tfl_manager.run(curr_img_data)
-
-        # first_img_id = process_data.get_first_img_id()
-        # frames_sum = process_data.get_frames_sum()
-        #
-        # for i in range(first_img_id, first_img_id + frames_sum):
-        #     process_data.process_the_data(data)
-        #     tfl_manager.run(data)
-
-
-
-
-
