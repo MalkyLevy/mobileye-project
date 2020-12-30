@@ -81,7 +81,7 @@ class Adapter:
         candidates_list = []
 
         for cand in tfl_candidates.keys():
-            if tfl_candidates[cand] > 1:
+            if tfl_candidates[cand] > 2:
                 candidates_list.append(cand)
 
         return candidates_list
