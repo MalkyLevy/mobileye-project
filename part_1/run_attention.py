@@ -1,6 +1,3 @@
-import math
-from distutils import dist
-
 try:
     print("Elementary imports: ")
     import os
@@ -31,39 +28,6 @@ except ImportError:
 
 print("All imports okay. Yay!")
 
-"""
-grid = {}
-points = []
-
-def addPoint(x, y):
-    # returns True if the point was accepted
-    dist = 1500
-    # compute the cell of the point
-    ix = int(math.floor(x / dist))
-    iy = int(math.floor(y / dist))
-
-    # check cell and all neighbors
-    for nhcell in ((ix-1, iy-1), (ix, iy-1), (ix+1, iy-1),
-                   (ix-1,  iy ), (ix,  iy ), (ix+1,  iy ),
-                   (ix-1, iy+1), (ix, iy+1), (ix+1, iy+1)):
-        if nhcell in grid:
-            for xx, yy in grid[nhcell]:
-                if (x - xx)**2 + (y - yy)**2 < dist:
-                    # anoter existing point is too close
-                    return False
-
-    # the new point is fine
-    points.append((x, y))
-
-    # we should also add it to the grid for future checks
-    if (ix, iy) in grid:
-        grid[(ix, iy)].append((x, y))
-    else:
-        grid[(ix, iy)] = [(x, y)]
-
-    return True
-"""
-
 
 def find_tfl_lights(c_image: np.ndarray, **kwargs):
     """
@@ -72,13 +36,6 @@ def find_tfl_lights(c_image: np.ndarray, **kwargs):
     :param kwargs: Whatever config you want to pass in here
     :return: 4-tuple of x_red, y_red, x_green, y_green
     """
-
-    # kernel = np.array(
-    #     [[-1, -1, -1, -1, -1],
-    #      [-1, 8, 8, 8, -1],
-    #      [-1, 8, 8, 8, -1],
-    #      [-1, 8, 8, 8, -1],
-    #      [-1, -1, -1, -1, -1]]) / 1
 
     x_red = []
     y_red = []
@@ -97,6 +54,7 @@ def find_tfl_lights(c_image: np.ndarray, **kwargs):
     red_coordinates = np.argwhere(red_layer_filtered == red_layer)
 
     for coordinate in red_coordinates:
+        # if addPoint(coordinate[1], coordinate[0]) is True:
         x_red.append(coordinate[1])
         y_red.append(coordinate[0])
 
@@ -108,6 +66,7 @@ def find_tfl_lights(c_image: np.ndarray, **kwargs):
     green_coordinates = np.argwhere(green_layer_filtered == green_layer)
 
     for coordinate in green_coordinates:
+        # if addPoint(coordinate[1], coordinate[0]) is True:
         x_green.append(coordinate[1])
         y_green.append(coordinate[0])
 
