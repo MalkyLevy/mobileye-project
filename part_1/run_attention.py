@@ -21,12 +21,44 @@ try:
     print("imports:")
     import cv2
     from skimage import color
+    import math
 
 except ImportError:
     print("Need to fix the installation")
     raise
 
 print("All imports okay. Yay!")
+
+def convolve_and_filter(c_image: np.ndarray, kernel):
+    layer = sg.convolve2d(c_image[:, :], kernel, mode='same', boundary='fill', fillvalue=0)
+    layer = layer / layer.max() * 255
+    layer_filtered = ndimage.maximum_filter(layer, 81)
+    coordinates = np.argwhere(layer_filtered == layer)
+
+    return coordinates
+
+
+def get_candidates_coordinates(c_image: np.ndarray, kernel):
+
+    coordinates = convolve_and_filter(c_image, kernel)
+
+    x = []
+    y = []
+
+    for coordinate in coordinates:
+        # if addPoint(coordinate[1], coordinate[0]) is True:
+        x.append(coordinate[1])
+        y.append(coordinate[0])
+
+    return x, y
+
+
+def get_kernel():
+    t = 1 - np.abs(np.linspace(-1, 1, 5))
+    kernel = t.reshape(5, 1) * t.reshape(1, 5)
+    kernel /= kernel.sum()
+
+    return kernel
 
 
 def find_tfl_lights(c_image: np.ndarray, **kwargs):
@@ -37,38 +69,9 @@ def find_tfl_lights(c_image: np.ndarray, **kwargs):
     :return: 4-tuple of x_red, y_red, x_green, y_green
     """
 
-    x_red = []
-    y_red = []
-    x_green = []
-    y_green = []
-
-    t = 1 - np.abs(np.linspace(-1, 1, 5))
-    kernel = t.reshape(5, 1) * t.reshape(1, 5)
-    kernel /= kernel.sum()
-
-    red_layer = sg.convolve2d(c_image[:, :, 0], kernel, mode='same', boundary='fill', fillvalue=0)
-    red_layer = red_layer / red_layer.max() * 255
-
-    red_layer_filtered = ndimage.maximum_filter(red_layer, 90)
-
-    red_coordinates = np.argwhere(red_layer_filtered == red_layer)
-
-    for coordinate in red_coordinates:
-        # if addPoint(coordinate[1], coordinate[0]) is True:
-        x_red.append(coordinate[1])
-        y_red.append(coordinate[0])
-
-    green_layer = sg.convolve2d(c_image[:, :, 1], kernel, mode='same', boundary='fill', fillvalue=0)
-    green_layer = green_layer / green_layer.max() * 255
-
-    green_layer_filtered = ndimage.maximum_filter(green_layer, 90)
-
-    green_coordinates = np.argwhere(green_layer_filtered == green_layer)
-
-    for coordinate in green_coordinates:
-        # if addPoint(coordinate[1], coordinate[0]) is True:
-        x_green.append(coordinate[1])
-        y_green.append(coordinate[0])
+    kernel = get_kernel()
+    x_red, y_red = get_candidates_coordinates(c_image[:, :, 0], kernel)
+    x_green, y_green = get_candidates_coordinates(c_image[:, :, 1], kernel)
 
     return x_red, y_red, x_green, y_green
 
